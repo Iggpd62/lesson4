@@ -177,3 +177,84 @@ public class HashMap <K, V> {
 
     //endregion
 }
+//2****. (Дополнительная, необязательная задача, для тех, кому очень скучно) Добавить возможность перебора всех
+// элементов нашей структуры данных, необходимо добавить несколько элементов, а затем перебрать все элементы
+// структуры HashTable используя цикл foreach. Подумайте, возможно вам стоит обратиться к интерфейсу Iterable и в
+// рамках имплементации подобного интерфейса создать объект типа Iterator, далее, вы реализуете метод next и hasNext,
+// наделите способностью нашу структуру HashMap быть перечисляемой.
+// Накидал вариант, но что-то запутался!!!
+
+public class Main {
+    public class HashMap<K, V> implements Iterable<Map.Entry<K, V>> {
+
+        // ...
+
+        private class HashMapIterator implements Iterator<Map.Entry<K, V>> {
+
+            private int bucketIndex;
+            private Node currentNode;
+
+            public HashMapIterator() {
+                bucketIndex = 0;
+                currentNode = null;
+                findNextNode();
+            }
+
+            public boolean hasNext() {
+                return currentNode != null;
+            }
+
+            public Map.Entry<K, V> next() {
+                if (!hasNext()) {
+                    throw new NoSuchElementException();
+                }
+                Map.Entry<K, V> entry = currentNode.value;
+                currentNode = currentNode.next;
+                findNextNode();
+                return entry;
+            }
+
+            private void findNextNode() {
+                while (currentNode == null && bucketIndex < buckets.length) {
+                    Bucket<K, V> bucket = buckets[bucketIndex];
+                    if (bucket != null) {
+                        currentNode = bucket.head;
+                    }
+                    bucketIndex++;
+                }
+            }
+        }
+
+        // ...
+
+    }
+
+    class Bucket<K, V> {
+
+        // ...
+
+        class Node {
+            Map.Entry<K, V> value;
+            Node next;
+
+            Node(Map.Entry<K, V> value, Node next) {
+                this.value = value;
+                this.next = next;
+            }
+        }
+
+        // ...
+
+    }
+
+    public static void main(String[] args) {
+        HashMap<Integer, String> map = new HashMap<>();
+        map.put(1, "one");
+        map.put(2, "two");
+        map.put(3, "three");
+
+        for (Map.Entry<Integer, String> entry : map) {
+            System.out.println(entry.getKey() + ": " + entry.getValue());
+        }
+    }
+}
